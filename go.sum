@@ -1,0 +1,4 @@
+github.com/walkure/gatt v0.0.0-20241018150429-9186a4bfc57d h1:YtEbstE66rVkY4aBL33KLxtucDh8ZKsLaO/ApB0iXxM=
+github.com/walkure/gatt v0.0.0-20241018150429-9186a4bfc57d/go.mod h1:67eoqL/DuZ3/5YWKBDjyGlxxNgEeaVg/JFmrMpdEePQ=
+golang.org/x/sys v0.11.0 h1:eG7RXZHdqOJ1i+0lgLgCpSXAp6M3LYlAo6osgSi0xOM=
+golang.org/x/sys v0.11.0/go.mod h1:oPkhp1MJrh7nUepCBck5+mAzfO9JrbApNNgaTdGDITg=
