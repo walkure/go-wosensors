@@ -14,8 +14,8 @@ const devTypeWoSensorTHO = 0x77 // 'w'
 
 // The THOData struct contains the data of the WoSensorTHO device.
 type THOData struct {
-	// Address of the device
-	Address string
+	// DeviceId the id of the device
+	DeviceId string
 	// Temperature in Celsius. 0.1 degree resolution.
 	Temperature float32
 	// Humidity in percentage (0-100%)
@@ -31,7 +31,7 @@ type THOData struct {
 // LogValue returns the slog.Value of the THOData.
 func (d THOData) LogValue() slog.Value {
 	return slog.GroupValue(
-		slog.String("Address", d.Address),
+		slog.String("DeviceId", d.DeviceId),
 		slog.String("Temperature", fmt.Sprintf("%.1f°C", d.Temperature)),
 		slog.Uint64("Humidity", uint64(d.Humidity)),
 		slog.Uint64("SequenceNumber", uint64(d.SequenceNumber)),
@@ -41,10 +41,11 @@ func (d THOData) LogValue() slog.Value {
 }
 
 // HandleWoSensorTHO returns a callback function for gatt.PeripheralDiscovered that can be used to handle the WoSensorTHO device.
-// The address is the device address of the target WoSensorTHO device. if it is empty, all WoSensorTHO devices will be handled.
+//
+// The deviceId is the device id of the target WoSensorTHO device. if it is empty, all WoSensorTHO devices will be handled.
 // The cb function will be called with new goroutine when receives the advertisement packet from a WoSensorTHO device.
 // The next function will be called if the device is not a target WoSensorTHO device.
-func HandleWoSensorTHO(address string,
+func HandleWoSensorTHO(deviceId string,
 	cb func(d THOData),
 	next func(gatt.Peripheral, *gatt.Advertisement, int)) func(gatt.Peripheral, *gatt.Advertisement, int) {
 
@@ -56,7 +57,7 @@ func HandleWoSensorTHO(address string,
 		panic("cb is nil")
 	}
 
-	address = strings.ToUpper(address)
+	deviceId = strings.ToUpper(deviceId)
 
 	return func(p gatt.Peripheral, a *gatt.Advertisement, rssi int) {
 
@@ -66,7 +67,9 @@ func HandleWoSensorTHO(address string,
 			return
 		}
 
-		if address != "" && strings.ToUpper(p.ID()) != address {
+		devId := strings.ToUpper(p.ID())
+
+		if deviceId != "" && devId != deviceId {
 			// Another UUID Device
 			next(p, a, rssi)
 			return
@@ -113,7 +116,7 @@ func HandleWoSensorTHO(address string,
 			return
 		}
 
-		datum.Address = p.ID()
+		datum.DeviceId = devId
 
 		temperature := int16(a.ManufacturerData[10]&0x0F) + int16(a.ManufacturerData[11]&0x7F)*10
 		if a.ManufacturerData[11]&0x80 == 0 {
