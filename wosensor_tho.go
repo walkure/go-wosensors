@@ -107,13 +107,6 @@ func HandleWoSensorTHO(address string,
 			return
 		}
 
-		cID := int(a.ManufacturerData[0]) | int(a.ManufacturerData[1])<<8
-		if cID != companyID {
-			// Another Manufacturer's Device
-			next(p, a, rssi)
-			return
-		}
-
 		if len(a.ManufacturerData) < 13 {
 			// Truncated Data. Discard.
 			next(p, a, rssi)
