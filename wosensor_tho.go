@@ -43,9 +43,10 @@ func (d THOData) LogValue() slog.Value {
 // HandleWoSensorTHO returns a callback function for gatt.PeripheralDiscovered that can be used to handle the WoSensorTHO device.
 //
 // The deviceId is the device id of the target WoSensorTHO device. if it is empty, all WoSensorTHO devices will be handled.
+// The allowWithoutBatteryPercent is true if the battery level is unknown(value=255).
 // The cb function will be called with new goroutine when receives the advertisement packet from a WoSensorTHO device.
 // The next function will be called if the device is not a target WoSensorTHO device.
-func HandleWoSensorTHO(deviceId string,
+func HandleWoSensorTHO(deviceId string, allowWithoutBatteryPercent bool,
 	cb func(d THOData),
 	next func(gatt.Peripheral, *gatt.Advertisement, int)) func(gatt.Peripheral, *gatt.Advertisement, int) {
 
@@ -98,7 +99,7 @@ func HandleWoSensorTHO(deviceId string,
 			}
 		}
 
-		if datum.BatteryPercent > 128 {
+		if !allowWithoutBatteryPercent && datum.BatteryPercent > 128 {
 			// Passive Scan. Battery Level is unknown.
 			next(p, a, rssi)
 			return

@@ -35,6 +35,7 @@ func main() {
 
 	d.Handle(gatt.PeripheralDiscovered(
 		wosensors.HandleWoSensorTHO("", // "aa:zz:pp:ff:dd:cc"
+			true, // allow passive scan response (BatteryPercent=INVALID(255))
 			func(d wosensors.THOData) {
 
 				// GATT lib. calls this callback function with a new goroutine.
